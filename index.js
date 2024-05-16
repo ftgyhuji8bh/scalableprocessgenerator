@@ -1,34 +1,34 @@
-function solveSudoku(board) {
-  solve(board);
-  function solve(board) {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        if (board[i][j] === ".") {
-          for (let num = 1; num <= 9; num++) {
-            const numChar = num.toString();
-            if (isValid(board, i, j, numChar)) {
-              board[i][j] = numChar;
-              if (solve(board)) return true;
-              board[i][j] = ".";
-            }
-          }
-          return false;
-        }
+function minWindow(s, t) {
+  const map = new Map();
+  for (const char of t) {
+    map.set(char, (map.get(char) || 0) + 1);
+  }
+  let required = map.size;
+  let left = 0;
+  let right = 0;
+  let minLen = Infinity;
+  let substrStart = 0;
+  while (right < s.length) {
+    const char = s[right];
+    if (map.has(char)) {
+      map.set(char, map.get(char) - 1);
+      if (map.get(char) === 0) required--;
+    }
+    while (required === 0) {
+      if (right - left + 1 < minLen) {
+        minLen = right - left + 1;
+        substrStart = left;
       }
+      const leftChar = s[left];
+      if (map.has(leftChar)) {
+        map.set(leftChar, map.get(leftChar) + 1);
+        if (map.get(leftChar) > 0) required++;
+      }
+      left++;
     }
-    return true;
+    right++;
   }
-  function isValid(board, row, col, num) {
-    const boxRow = Math.floor(row / 3) * 3;
-    const boxCol = Math.floor(col / 3) * 3;
-    for (let i = 0; i < 9; i++) {
-      if (
-        board[row][i] === num ||
-        board[i][col] === num ||
-        board[boxRow + Math.floor(i / 3)][boxCol + (i % 3)] === num
-      )
-        return false;
-    }
-    return true;
-  }
+  return minLen === Infinity
+    ? ""
+    : s.substring(substrStart, substrStart + minLen);
 }
